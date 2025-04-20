@@ -55,10 +55,6 @@ function Header() {
             <img src={Search} alt="search" />
           </div>
         </div>
-
-        <Modal title="Login" open={open} onClose={() => setOpen(false)}>
-          <LoginForm onClose={() => setOpen(false)} />
-        </Modal>
       </div>
 
       {/* Desktop Header */}
@@ -80,9 +76,23 @@ function Header() {
         <div className="flex items-center gap-x-4">
           <img src={Search} alt="search" className="w-6 h-6" />
           <img src={Bag} alt="bag" className="w-6 h-6" />
-          <img src={User} alt="user" className="w-6 h-6" />
+
+          {localStorage.getItem("username") === "Amirhossein" &&
+          localStorage.getItem("phoneNumber") === "09137983097" ? (
+            <img src={User} alt="user" className="w-6 h-6" />
+          ) : (
+            <button
+              className="bg-primary text-white rounded-lg !px-4 !py-2"
+              onClick={() => setOpen(true)}>
+              Login / Sign Up
+            </button>
+          )}
         </div>
       </div>
+
+      <Modal title="Login" open={open} onClose={() => setOpen(false)}>
+        <LoginForm onClose={() => setOpen(false)} />
+      </Modal>
     </>
   )
 }
