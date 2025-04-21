@@ -16,7 +16,7 @@ export default function Filters() {
         <p className="text-primary underline">Products</p>
       </div>
 
-      {/* Mobile Filters */}
+      {/* Mobile Filters Button */}
       <div
         onClick={() => setOpen(true)}
         className="md:hidden cursor-pointer flex items-center w-36 h-10 rounded-lg gap-x-2 !pl-2 !mt-4 shadow_2">
