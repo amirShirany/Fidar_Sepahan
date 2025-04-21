@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import Next from "../assets/icons/Next.svg"
 import ProductCard from "./ProductCard"
 
 const Products = () => {
@@ -62,8 +63,8 @@ const Products = () => {
   }
 
   return (
-    <div className="container mx-auto my-8 px-4">
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+    <div className="container mx-auto my-8">
+      <div className="grid grid-cols-2 md:grid-cols-1 xl:grid-cols-3 gap-x-6 gap-y-7">
         {paginatedProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -75,6 +76,13 @@ const Products = () => {
           {renderPaginationButtons()}
         </div>
         <div className="text-black !ml-3 !pt-8">...</div>
+        <img
+          src={Next}
+          alt="arrow-right"
+          className="!ml-3 !pt-10 cursor-pointer"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        />
       </div>
     </div>
   )

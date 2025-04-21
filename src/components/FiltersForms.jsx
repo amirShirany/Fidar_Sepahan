@@ -13,12 +13,20 @@ function FiltersForms() {
       setIsLoading(true)
       try {
         const response = await fetch(
-          "https://fakestoreapi.com/products/categories"
+          "https://fakestoreapi.in/api/products/category"
         )
-        if (!response.ok)
+
+        if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
         const data = await response.json()
-        setCategories(data)
+
+        if (data.status === "SUCCESS") {
+          setCategories(data.categories) // Directly use the categories array
+        } else {
+          throw new Error(data.message || "Failed to fetch categories")
+        }
       } catch (err) {
         setError(err.message || "Failed to fetch categories")
       } finally {
@@ -29,35 +37,27 @@ function FiltersForms() {
     fetchCategories()
   }, [])
 
-  const toggleAccordion = () => setIsOpen(!isOpen)
+  const toggleAccordion = () => setIsOpen((prev) => !prev)
 
-  // Handle checkbox changes: add or remove the value from the state
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target
-    setSelectedOptions((prev) =>
-      checked ? [...prev, value] : prev.filter((item) => item !== value)
-    )
+    setSelectedOptions((prev) => {
+      const next = new Set(prev)
+      checked ? next.add(value) : next.delete(value)
+      return Array.from(next)
+    })
   }
 
-  const handleClearAll = () => {
-    setSelectedOptions([])
-  }
+  // ... keep other functions the same ...
 
   return (
     <>
-      <div className="flex justify-between items-center !mx-10 md:max-w-[15rem]">
-        <span className="text-xl">Filters</span>
-        <button
-          onClick={handleClearAll}
-          className="text-primary hover:text-primary-dark transition-colors">
-          Clear all
-        </button>
-      </div>
+      {/* ... keep the header and clear button the same ... */}
 
       <div className="!mx-10 max-w-2xs">
         <button
           onClick={toggleAccordion}
-          className="w-full flex justify-between items-center px-4 py-3 focus:outline-none">
+          className=" flex justify-between items-center px-4 py-3 focus:outline-none">
           <span className="font-semibold text-gray-700">Category</span>
           <svg
             className={`w-5 h-5 transform transition-transform duration-200 ${
@@ -91,7 +91,12 @@ function FiltersForms() {
               </p>
             )}
 
+            {!isLoading && !error && categories.length === 0 && (
+              <p className="text-gray-500 text-sm">No categories available</p>
+            )}
+
             {!isLoading &&
+              !error &&
               categories.map((category) => (
                 <label
                   key={category}
@@ -103,7 +108,9 @@ function FiltersForms() {
                     onChange={handleCheckboxChange}
                     className="appearance-auto h-6 w-6 border-2 border-gray-700 rounded-md checked:bg-primary checked:border-primary"
                   />
-                  <span className="text-gray-700">{category}</span>
+                  <span className="text-gray-700">
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </span>
                 </label>
               ))}
           </div>

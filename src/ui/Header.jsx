@@ -13,7 +13,8 @@ function Header() {
 
   return (
     <>
-      <div className="flex flex-col gap-y-3 w-full max-w-[19.5rem] md:hidden">
+      {/* Mobile Header */}
+      <div className="flex flex-col mx-auto gap-y-3 !pt-2 w-full max-w-[19.5rem] md:hidden">
         <div className="flex justify-between items-center">
           <button>
             <img src={Menu} alt="menu" />
@@ -58,7 +59,7 @@ function Header() {
       </div>
 
       {/* Desktop Header */}
-      <div className="hidden md:flex w-full items-center">
+      <div className="hidden md:flex w-full items-center !py-8">
         <div className="flex-1 flex items-center justify-center gap-x-12">
           <NavLink to="/">Home</NavLink>
           <NavLink
@@ -73,7 +74,7 @@ function Header() {
           <NavLink to="/contact">Contact Us</NavLink>
         </div>
 
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center gap-x-4 !pr-28">
           <img src={Search} alt="search" className="w-6 h-6" />
           <img src={Bag} alt="bag" className="w-6 h-6" />
 
