@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import Next from "../assets/icons/Next.svg"
 import ProductCard from "./ProductCard"
 
 const Products = ({ selectedOptions }) => {
