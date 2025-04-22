@@ -1,123 +1,107 @@
 import { useState, useEffect } from "react"
 
-function FiltersForms() {
+function FiltersForms({ selectedOptions, setSelectedOptions }) {
   const [isOpen, setIsOpen] = useState(true)
-  const [selectedOptions, setSelectedOptions] = useState([])
   const [categories, setCategories] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Fetch categories from the API
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setIsLoading(true)
-      try {
-        const response = await fetch(
-          "https://fakestoreapi.in/api/products/category"
-        )
+  const fetchCategories = async () => {
+    console.log("responsee")
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
+    setIsLoading(true)
+    try {
+      const response = await fetch(
+        "https://fakestoreapi.in/api/products/category"
+      )
+      console.log("responsee", response)
+      if (!response.ok) throw new Error(`خطای HTTP! وضعیت: ${response.status}`)
 
-        const data = await response.json()
-
-        if (data.status === "SUCCESS") {
-          setCategories(data.categories) // Directly use the categories array
-        } else {
-          throw new Error(data.message || "Failed to fetch categories")
-        }
-      } catch (err) {
-        setError(err.message || "Failed to fetch categories")
-      } finally {
-        setIsLoading(false)
+      const data = await response.json()
+      if (data.status === "SUCCESS") {
+        setCategories(data.categories)
+      } else {
+        throw new Error(data.message || "دریافت دسته‌بندی‌ها ناموفق بود")
       }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
     }
+  }
 
+  // دریافت دسته‌بندی‌ها
+  useEffect(() => {
     fetchCategories()
   }, [])
 
-  const toggleAccordion = () => setIsOpen((prev) => !prev)
+  const toggleAccordion = () => setIsOpen(!isOpen)
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target
-    setSelectedOptions((prev) => {
-      const next = new Set(prev)
-      checked ? next.add(value) : next.delete(value)
-      return Array.from(next)
-    })
+    setSelectedOptions((prev) =>
+      checked ? [...prev, value] : prev.filter((item) => item !== value)
+    )
   }
 
-  // ... keep other functions the same ...
+  const handleClearAll = () => {
+    setSelectedOptions([])
+  }
 
   return (
-    <>
-      {/* ... keep the header and clear button the same ... */}
+    <div className="md:w-[288px] mx-auto p-4">
+      {/* بخش فیلترها */}
+      <div className="bg-white shadow-lg rounded-lg p-4 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold !p-4">Filters</h2>
+          <button onClick={handleClearAll} className="text-primary !mr-4">
+            clear all
+          </button>
+        </div>
 
-      <div className="!mx-10 max-w-2xs">
-        <button
-          onClick={toggleAccordion}
-          className=" flex justify-between items-center px-4 py-3 focus:outline-none">
-          <span className="font-semibold text-gray-700">Category</span>
-          <svg
-            className={`w-5 h-5 transform transition-transform duration-200 ${
-              isOpen ? "rotate-180" : "rotate-0"
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
+        {/* دسته‌بندی‌ها */}
+        <div className="mb-4 !p-4 ">
+          <button
+            onClick={toggleAccordion}
+            className="w-full flex justify-between items-center p-2  rounded">
+            <span className="text-xl !mb-3">category</span>
+            <svg
+              className={`w-5 h-5 transform ${isOpen ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
 
-        {/* Accordion Content (Checkbox Group) */}
-        {isOpen && (
-          <div className="!mt-5">
-            {isLoading && (
-              <div className="flex items-center justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              </div>
-            )}
-
-            {error && (
-              <p className="text-red-500 text-sm p-2 bg-red-50 rounded">
-                {error} - Please try refreshing the page
-              </p>
-            )}
-
-            {!isLoading && !error && categories.length === 0 && (
-              <p className="text-gray-500 text-sm">No categories available</p>
-            )}
-
-            {!isLoading &&
-              !error &&
-              categories.map((category) => (
+          {isOpen && (
+            <div className="mt-2 flex flex-col gap-2">
+              {categories?.map((category) => (
                 <label
                   key={category}
-                  className="flex items-center !space-x-4 !mb-4">
+                  className="flex items-center !space-x-4 p-2 hover:bg-gray-50 rounded">
                   <input
                     type="checkbox"
                     value={category}
                     checked={selectedOptions.includes(category)}
                     onChange={handleCheckboxChange}
-                    className="appearance-auto h-6 w-6 border-2 border-gray-700 rounded-md checked:bg-primary checked:border-primary"
+                    className="form-checkbox h-5 w-5 text-blue-600"
                   />
                   <span className="text-gray-700">
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </span>
                 </label>
               ))}
-          </div>
-        )}
-        <hr className="!mb-10" />
+            </div>
+          )}
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 

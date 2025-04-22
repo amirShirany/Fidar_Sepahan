@@ -2,28 +2,53 @@ import { useEffect, useState } from "react"
 import Next from "../assets/icons/Next.svg"
 import ProductCard from "./ProductCard"
 
-const Products = () => {
+const Products = ({ selectedOptions }) => {
   const [products, setProducts] = useState([])
+  const [isProductsLoading, setIsProductsLoading] = useState(false)
+  const [productsError, setProductsError] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(8)
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("https://fakestoreapi.in/api/products")
-        const data = await response.json()
-        setProducts(data.products)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("https://fakestoreapi.in/api/products")
+      const data = await response.json()
+      setProducts(data.products)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
+  }
+  // دریافت محصولات هنگام تغییر دسته‌بندی‌های انتخاب شده
+  const filterProducts = async () => {
+    setIsProductsLoading(true)
+    setProductsError(null)
+    try {
+      const promises = selectedOptions.map((category) =>
+        fetch(`https://fakestoreapi.in/api/products/category?type=${category}`)
+          .then((res) => res.json())
+          .then((data) => data.products)
+      )
 
-    fetchProducts()
-  }, [])
+      const productsArrays = await Promise.all(promises)
+      setProducts(productsArrays.flat())
+    } catch (err) {
+      setProductsError("خطا در دریافت محصولات")
+    } finally {
+      setIsProductsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (selectedOptions.length == 0) {
+      fetchProducts()
+    } else {
+      filterProducts()
+    }
+  }, [JSON.stringify(selectedOptions)])
 
   if (loading) return <div className="text-center p-4">Loading...</div>
   if (error) return <div className="text-center text-red-500">{error}</div>
@@ -61,9 +86,9 @@ const Products = () => {
     }
     return buttons
   }
-
+  console.log("paginatedProducts:", paginatedProducts)
   return (
-    <div className="container mx-auto my-8">
+    <div className="container w-full !max-w-[57rem] mx-auto my-8">
       <div className="grid grid-cols-2 md:grid-cols-1 xl:grid-cols-3 gap-x-6 gap-y-7">
         {paginatedProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
@@ -76,13 +101,6 @@ const Products = () => {
           {renderPaginationButtons()}
         </div>
         <div className="text-black !ml-3 !pt-8">...</div>
-        <img
-          src={Next}
-          alt="arrow-right"
-          className="!ml-3 !pt-10 cursor-pointer"
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        />
       </div>
     </div>
   )

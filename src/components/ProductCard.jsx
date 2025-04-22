@@ -1,11 +1,29 @@
+import { useNavigate } from "react-router-dom"
 import star from "../assets/icons/star.svg"
 
 function ProductCard({ product }) {
+  console.log("product:", product)
   const discountedPrice =
     product.price - (product.price * product.discount) / 100
+  const navigate = useNavigate()
+  const handleCardClick = () => {
+    navigate(`/product/${product.id}`)
+  }
+
+  // const fetchProductInfo = () => {
+  //   try {
+  //     const response = await fetch(`https://fakestoreapi.in/api/products/${product.id}`)
+  //     const data = await response.json()
+  //     console.log("data:", data)
+  //   } catch (error) {
+  //     console.error("Error fetching product info:", error)
+  //   }
+  // }
 
   return (
-    <div className="w-[9.25rem] lg:w-[18rem] bg-white rounded-lg shadow_2 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div
+      onClick={handleCardClick}
+      className="w-[9.25rem] lg:w-[18rem] bg-white rounded-lg shadow_2 overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative !p-2">
         {product.discount && (
           <span className="absolute top-2 left-0 !pb-2 bg-secondary-100 text-secondary-400 rounded-br-full rounded-tr-full w-[2.38rem] h-[1.5rem]  justify-center items-center">

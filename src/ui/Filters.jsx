@@ -4,7 +4,7 @@ import ArrowRight from "../assets/icons/ArrowRight.svg"
 import SettingMobile from "../assets/icons/SettingMobile.svg"
 import FiltersForms from "../components/FiltersForms"
 
-export default function Filters() {
+export default function Filters({ selectedOptions, setSelectedOptions }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -26,12 +26,19 @@ export default function Filters() {
 
       {/* Desktop Filters */}
       <div className="hidden md:block">
-        <FiltersForms />
+        <FiltersForms
+          selectedOptions={selectedOptions}
+          setSelectedOptions={setSelectedOptions}
+        />
       </div>
 
       {/* Modal Filters */}
       <Modal title="Filters" open={open} onClose={() => setOpen(false)}>
-        <FiltersForms onClose={() => setOpen(false)} />
+        <FiltersForms
+          selectedOptions={selectedOptions}
+          setSelectedOptions={setSelectedOptions}
+          onClose={() => setOpen(false)}
+        />
       </Modal>
     </div>
   )
